@@ -13,7 +13,11 @@
       <h1 id="workbook-title">2026年进口货物物流跟踪表</h1>
       <p id="meta" class="meta"></p>
     </div>
-    <a class="download" href="assets/2026年进口货物物流跟踪表-铁矿协作一部&新拓.xlsx">下载原表</a>
+    <div class="header-actions">
+      <a class="download" href="assets/2026年进口货物物流跟踪表-铁矿协作一部&新拓.xlsx">下载原表</a>
+      <button id="export-xls" class="button primary" type="button">导出 Excel</button>
+      <button id="export-csv" class="button" type="button">导出当前 CSV</button>
+    </div>
   </header>
 
   <main>
@@ -23,6 +27,13 @@
         <input id="search" type="search" placeholder="搜索当前工作表" autocomplete="off" />
         <span id="count" class="count"></span>
       </div>
+    </section>
+    <section class="editbar" aria-label="Editing controls">
+      <button id="add-row" class="button" type="button">新增行</button>
+      <button id="delete-row" class="button danger" type="button" disabled>删除选中行</button>
+      <button id="reset-sheet" class="button" type="button">重置当前表</button>
+      <button id="reset-all" class="button" type="button">重置全部</button>
+      <span id="edit-status" class="edit-status"></span>
     </section>
     <section class="table-shell">
       <table id="sheet-table"></table>

@@ -66,8 +66,55 @@ h1 {
   font-weight: 600;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .download:hover {
   background: var(--accent-strong);
+}
+
+.button {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 12px;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.button.primary:hover {
+  background: var(--accent-strong);
+  color: #ffffff;
+}
+
+.button.danger:hover:not(:disabled) {
+  border-color: #b42318;
+  color: #b42318;
 }
 
 main {
@@ -80,6 +127,20 @@ main {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 12px;
+}
+
+.editbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+
+.edit-status {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .tabs {
@@ -195,6 +256,28 @@ thead th {
   color: transparent;
 }
 
+.cell[contenteditable="true"] {
+  cursor: text;
+}
+
+.cell[contenteditable="true"]:focus {
+  position: relative;
+  z-index: 5;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.cell.changed {
+  background-image: linear-gradient(90deg, rgba(250, 204, 21, 0.28), rgba(250, 204, 21, 0.28));
+}
+
+.selected-row td,
+.selected-row .row-head {
+  background-color: #eaf7f5;
+}
+
 tbody tr:hover td,
 tbody tr:hover .row-head {
   background-color: #fff8dc;
@@ -208,8 +291,18 @@ tbody tr:hover .row-head {
   }
 
   .download,
+  .header-actions,
   .search-wrap {
     width: 100%;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .button,
+  .download {
+    text-align: center;
   }
 
   main {
@@ -217,6 +310,6 @@ tbody tr:hover .row-head {
   }
 
   .table-shell {
-    height: calc(100vh - 258px);
+    height: calc(100vh - 320px);
   }
 }
