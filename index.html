@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2026年进口货物物流跟踪表</title>
-  <link rel="stylesheet" href="styles.css?v=edit2" />
+  <link rel="stylesheet" href="styles.css?v=edit3" />
 </head>
 <body>
   <header class="app-header">
@@ -29,8 +29,12 @@
       </div>
     </section>
     <section class="editbar" aria-label="Editing controls">
+      <button id="undo" class="button" type="button" disabled>撤销</button>
+      <button id="redo" class="button" type="button" disabled>重做</button>
       <button id="add-row" class="button" type="button">新增行</button>
       <button id="delete-row" class="button danger" type="button" disabled>删除选中行</button>
+      <button id="merge-cells" class="button" type="button" disabled>合并单元格</button>
+      <button id="unmerge-cells" class="button" type="button" disabled>取消合并</button>
       <button id="reset-sheet" class="button" type="button">重置当前表</button>
       <button id="reset-all" class="button" type="button">重置全部</button>
       <span id="edit-status" class="edit-status"></span>
@@ -40,7 +44,7 @@
     </section>
   </main>
 
-  <script src="data/workbook.js?v=edit2"></script>
-  <script src="app.js?v=edit2"></script>
+  <script src="data/workbook.js?v=edit3"></script>
+  <script src="app.js?v=edit3"></script>
 </body>
 </html>

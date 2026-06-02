@@ -221,6 +221,8 @@ td {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.35;
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 
 thead th {
@@ -284,6 +286,7 @@ thead th {
   color: var(--ink);
   font: inherit;
   line-height: 1.35;
+  text-align: center;
   outline: none;
 }
 
@@ -302,6 +305,20 @@ thead th {
 
 .cell.changed {
   background-image: linear-gradient(90deg, rgba(250, 204, 21, 0.28), rgba(250, 204, 21, 0.28));
+}
+
+.cell.selected-cell {
+  box-shadow: inset 0 0 0 2px #0f766e;
+}
+
+.cell.merged-cell {
+  background-image: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(15, 118, 110, 0.08));
+}
+
+.cell.changed.merged-cell {
+  background-image:
+    linear-gradient(90deg, rgba(250, 204, 21, 0.28), rgba(250, 204, 21, 0.28)),
+    linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(15, 118, 110, 0.08));
 }
 
 .selected-row td,
