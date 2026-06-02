@@ -151,7 +151,7 @@ function renderTable() {
       if (!cell.text) classes.push("empty");
       if (isChanged(state.sheetIndex, index, colIndex)) classes.push("changed");
       const title = cell.formula ? ` title="${escapeText(cell.formula)}"` : "";
-      return `<td class="${classes.join(" ")}" contenteditable="true" spellcheck="false" data-row="${index}" data-col="${colIndex}"${title}${styleAttr(cell.style)}>${escapeText(cell.text)}</td>`;
+      return `<td class="${classes.join(" ")}" tabindex="0" data-row="${index}" data-col="${colIndex}"${title}${styleAttr(cell.style)}>${escapeText(cell.text)}</td>`;
     }).join("");
     return `<tr class="${selected}"><th class="row-head" data-row="${index}" title="点击选择整行">${index + 1}</th>${cells}</tr>`;
   }).join("");
@@ -167,21 +167,52 @@ function render() {
   renderTable();
 }
 
-function updateCell(target) {
+function updateCell(rowIndex, colIndex, text) {
   const sheet = workbook.sheets[state.sheetIndex];
-  const rowIndex = Number(target.dataset.row);
-  const colIndex = Number(target.dataset.col);
   const cell = sheet.rows[rowIndex][colIndex] || { text: "" };
-  const text = target.textContent.trim();
   cell.text = text;
   cell.value = text;
   if (cell.formula && text !== getOriginalText(state.sheetIndex, rowIndex, colIndex)) {
     delete cell.formula;
   }
   sheet.rows[rowIndex][colIndex] = cell;
-  target.classList.toggle("empty", !text);
-  target.classList.toggle("changed", isChanged(state.sheetIndex, rowIndex, colIndex));
   saveEdits();
+}
+
+function startCellEdit(cellElement) {
+  if (cellElement.classList.contains("editing")) return;
+  const rowIndex = Number(cellElement.dataset.row);
+  const colIndex = Number(cellElement.dataset.col);
+  const sheet = workbook.sheets[state.sheetIndex];
+  const current = sheet.rows[rowIndex]?.[colIndex]?.text ?? "";
+  cellElement.classList.add("editing");
+  cellElement.innerHTML = "";
+
+  const editor = document.createElement("textarea");
+  editor.className = "cell-editor";
+  editor.value = current;
+  editor.rows = Math.min(6, Math.max(1, String(current).split(/\r\n|\r|\n/).length));
+  cellElement.appendChild(editor);
+  editor.focus();
+  editor.select();
+
+  const commit = () => {
+    if (!cellElement.isConnected) return;
+    updateCell(rowIndex, colIndex, editor.value.trim());
+    renderTable();
+  };
+
+  editor.addEventListener("blur", commit, { once: true });
+  editor.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      editor.blur();
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      renderTable();
+    }
+  });
 }
 
 function downloadBlob(content, fileName, type) {
@@ -279,23 +310,15 @@ search.addEventListener("input", event => {
   renderTable();
 });
 
-table.addEventListener("input", event => {
-  const cell = event.target.closest("td.cell[contenteditable]");
-  if (cell) updateCell(cell);
-});
-
-table.addEventListener("paste", event => {
-  const cell = event.target.closest("td.cell[contenteditable]");
-  if (!cell) return;
-  event.preventDefault();
-  document.execCommand("insertText", false, event.clipboardData.getData("text/plain"));
-});
-
 table.addEventListener("click", event => {
   const rowHead = event.target.closest(".row-head[data-row]");
-  if (!rowHead) return;
-  state.selectedRow = Number(rowHead.dataset.row);
-  renderTable();
+  if (rowHead) {
+    state.selectedRow = Number(rowHead.dataset.row);
+    renderTable();
+    return;
+  }
+  const cell = event.target.closest("td.cell[data-row][data-col]");
+  if (cell) startCellEdit(cell);
 });
 
 document.getElementById("export-xls").addEventListener("click", exportExcelXml);

@@ -256,11 +256,42 @@ thead th {
   color: transparent;
 }
 
-.cell[contenteditable="true"] {
+.cell {
+  cursor: pointer;
+}
+
+.cell:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.cell.editing {
+  padding: 0;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.cell-editor {
+  display: block;
+  width: 100%;
+  min-width: 120px;
+  min-height: 34px;
+  margin: 0;
+  border: 2px solid var(--accent);
+  padding: 7px 9px;
+  resize: vertical;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.35;
+  outline: none;
+}
+
+.cell[tabindex="0"] {
   cursor: text;
 }
 
-.cell[contenteditable="true"]:focus {
+.cell[tabindex="0"]:focus {
   position: relative;
   z-index: 5;
   outline: 2px solid var(--accent);
