@@ -317,7 +317,7 @@ function renderTable() {
       if (span) classes.push("merged-cell");
       const title = cell.formula ? ` title="${escapeText(cell.formula)}"` : "";
       const spanAttrs = span ? ` rowspan="${span.rowspan}" colspan="${span.colspan}"` : "";
-      return `<td class="${classes.join(" ")}" tabindex="0" data-row="${index}" data-col="${colIndex}"${spanAttrs}${title}${styleAttr(cell.style)}>${escapeText(cell.text)}</td>`;
+      return `<td class="${classes.join(" ")}" contenteditable="true" spellcheck="false" data-row="${index}" data-col="${colIndex}"${spanAttrs}${title}${styleAttr(cell.style)}>${escapeText(cell.text)}</td>`;
     }).join("");
     return `<tr class="${selected}"><th class="row-head" data-row="${index}" title="点击选择整行">${index + 1}</th>${cells}</tr>`;
   }).join("");
@@ -346,45 +346,6 @@ function updateCell(rowIndex, colIndex, text) {
   sheet.rows[rowIndex][colIndex] = cell;
   saveEdits();
   return true;
-}
-
-function startCellEdit(cellElement) {
-  if (cellElement.classList.contains("editing")) return;
-  const rowIndex = Number(cellElement.dataset.row);
-  const colIndex = Number(cellElement.dataset.col);
-  const sheet = workbook.sheets[state.sheetIndex];
-  const current = sheet.rows[rowIndex]?.[colIndex]?.text ?? "";
-  state.selectedRange = { sr: rowIndex, sc: colIndex, er: rowIndex, ec: colIndex };
-  state.selectedRow = null;
-  updateMeta();
-  cellElement.classList.add("editing");
-  cellElement.innerHTML = "";
-
-  const editor = document.createElement("textarea");
-  editor.className = "cell-editor";
-  editor.value = current;
-  editor.rows = Math.min(6, Math.max(1, String(current).split(/\r\n|\r|\n/).length));
-  cellElement.appendChild(editor);
-  editor.focus();
-  editor.select();
-
-  const commit = () => {
-    if (!cellElement.isConnected) return;
-    updateCell(rowIndex, colIndex, editor.value.trim());
-    renderTable();
-  };
-
-  editor.addEventListener("blur", commit, { once: true });
-  editor.addEventListener("keydown", event => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      editor.blur();
-    }
-    if (event.key === "Escape") {
-      event.preventDefault();
-      renderTable();
-    }
-  });
 }
 
 function downloadBlob(content, fileName, type) {
@@ -573,15 +534,55 @@ table.addEventListener("click", event => {
     renderTable();
     return;
   }
-  startCellEdit(cell);
+  state.selectedRange = { sr: rowIndex, sc: colIndex, er: rowIndex, ec: colIndex };
+  state.selectedRow = null;
+  updateMeta();
+});
+
+table.addEventListener("focusin", event => {
+  const cell = event.target.closest("td.cell[data-row][data-col]");
+  if (!cell) return;
+  cell.dataset.before = cell.textContent.trim();
+});
+
+table.addEventListener("input", event => {
+  const cell = event.target.closest("td.cell[data-row][data-col]");
+  if (!cell) return;
+  cell.classList.toggle("empty", !cell.textContent.trim());
+});
+
+table.addEventListener("focusout", event => {
+  const cell = event.target.closest("td.cell[data-row][data-col]");
+  if (!cell) return;
+  const rowIndex = Number(cell.dataset.row);
+  const colIndex = Number(cell.dataset.col);
+  const before = cell.dataset.before ?? "";
+  const after = cell.textContent.trim();
+  delete cell.dataset.before;
+  if (before !== after) {
+    updateCell(rowIndex, colIndex, after);
+    renderTable();
+  }
+});
+
+table.addEventListener("paste", event => {
+  const cell = event.target.closest("td.cell[data-row][data-col]");
+  if (!cell) return;
+  event.preventDefault();
+  document.execCommand("insertText", false, event.clipboardData.getData("text/plain"));
 });
 
 table.addEventListener("keydown", event => {
   const cell = event.target.closest("td.cell[data-row][data-col]");
   if (!cell) return;
-  if (event.key === "Enter") {
+  if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
-    startCellEdit(cell);
+    cell.blur();
+  }
+  if (event.key === "Escape") {
+    event.preventDefault();
+    cell.textContent = cell.dataset.before ?? cell.textContent;
+    cell.blur();
   }
 });
 
