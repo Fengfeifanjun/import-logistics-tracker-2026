@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026年进口货物物流跟踪表</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Import Logistics Tracker</p>
+      <h1 id="workbook-title">2026年进口货物物流跟踪表</h1>
+      <p id="meta" class="meta"></p>
+    </div>
+    <a class="download" href="assets/2026年进口货物物流跟踪表-铁矿协作一部&新拓.xlsx">下载原表</a>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Workbook controls">
+      <nav id="tabs" class="tabs" aria-label="Sheets"></nav>
+      <div class="search-wrap">
+        <input id="search" type="search" placeholder="搜索当前工作表" autocomplete="off" />
+        <span id="count" class="count"></span>
+      </div>
+    </section>
+    <section class="table-shell">
+      <table id="sheet-table"></table>
+    </section>
+  </main>
+
+  <script src="data/workbook.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
